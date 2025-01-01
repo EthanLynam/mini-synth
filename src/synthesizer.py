@@ -1,5 +1,7 @@
 import numpy as np
+
 from utils import generate_wave, normalize_wave
+from utils import apply_filter
 
 class Synthesizer:
     def __init__(self, sample_rate = 44100, num_samples = 44100):
@@ -7,13 +9,15 @@ class Synthesizer:
         self.num_samples = num_samples
         self.volume = 0.5
         self.amplifier_gain = 1.0
-        self.distortion_amount = 1.2  # No distortion by default
-        self.reverb_amount = 0.0  # No reverb by default
-        self.attack_amount = 0.0  # No attack by default
-        self.decay_amount = 0.0  # No decay by default
-        self.sustain_amount = 1.0  # Full sustain (no volume change)
-        self.release_amount = 0.0  # No release by default
-        self.total_duration = 1.0  # Default duration of the sound
+        self.distortion_amount = 1.2
+        self.reverb_amount = 0.0
+        self.attack_amount = 0.0
+        self.decay_amount = 0.0
+        self.sustain_amount = 1.0
+        self.release_amount = 0.0
+        self.total_duration = 2
+        self.filter_cutoff = 1000
+        self.filter_type = "lowpass"
 
     def set_adsr(self, attack, decay, sustain, release):
         self.attack_amount = attack
@@ -59,11 +63,15 @@ class Synthesizer:
             if i >= decay:
                 reverb_signal[i] += self.reverb_amount * reverb_signal[i - decay]
         return reverb_signal
-
+    
+    def apply_filtering(self, wave):
+        return apply_filter(wave, self.sample_rate, self.filter_type, self.filter_cutoff)
+    
     def process_wave(self, wave):
         wave = self.apply_adsr(wave)
         wave = self.apply_distortion(wave)
         wave = self.apply_reverb(wave)
+        wave = self.apply_filtering(wave)
         return normalize_wave(wave)
 
     def generate_and_process_wave(self, freq, waveform="sine"):

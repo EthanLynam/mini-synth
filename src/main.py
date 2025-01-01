@@ -1,20 +1,17 @@
 import tkinter as tk
-import numpy as np
 from tkinter import ttk
+import numpy as np
 import pyaudio
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 from synthesizer import Synthesizer
-from utils import set_volume
-from utils import set_amplifier_gain
 from utils import set_distortion_amount
 from utils import set_reverb_amount
 from utils import set_attack
 from utils import set_decay
 from utils import set_sustain
 from utils import set_release
-from utils import set_num_samples
 
 # PyAudio setup
 p = pyaudio.PyAudio()
@@ -62,7 +59,7 @@ def create_controls(frame):
         from_=0.1,
         to=1.0,
         orient=tk.HORIZONTAL,
-        command=lambda value: set_volume(value, synth)
+        command=lambda value: setattr(synth, 'volume', float(value))
     )
     vol_slider.set(synth.volume)
     vol_slider.pack(side=tk.LEFT, padx=5)
@@ -75,12 +72,12 @@ def create_controls(frame):
         from_=0.1,
         to=5.0,
         orient=tk.HORIZONTAL,
-        command=lambda value: set_amplifier_gain(value, synth)
+        command=lambda value: setattr(synth, 'amplifier_gain', float(value))
     )
     amp_slider.set(synth.amplifier_gain)
     amp_slider.pack(side=tk.LEFT, padx=5)
 
-    # Distortion Slider
+    # Distortion Slider (uses utility function)
     distortion_label = ttk.Label(frame, text="Distortion:")
     distortion_label.pack(side=tk.LEFT, padx=5)
     distortion_slider = ttk.Scale(
@@ -93,7 +90,7 @@ def create_controls(frame):
     distortion_slider.set(synth.distortion_amount)
     distortion_slider.pack(side=tk.LEFT, padx=5)
 
-    # Reverb Slider
+    # Reverb Slider (uses utility function)
     reverb_label = ttk.Label(frame, text="Reverb:")
     reverb_label.pack(side=tk.LEFT, padx=5)
     reverb_slider = ttk.Scale(
@@ -106,8 +103,8 @@ def create_controls(frame):
     reverb_slider.set(synth.reverb_amount)
     reverb_slider.pack(side=tk.LEFT, padx=5)
 
-    # Attack Slider
-    attack_label = ttk.Label(frame, text="Attack")
+    # Attack Slider (uses utility function)
+    attack_label = ttk.Label(frame, text="Attack:")
     attack_label.pack(side=tk.LEFT, padx=5)
     attack_slider = ttk.Scale(
         frame,
@@ -119,8 +116,8 @@ def create_controls(frame):
     attack_slider.set(synth.attack_amount)
     attack_slider.pack(side=tk.LEFT, padx=5)
 
-    # Decay Slider
-    decay_label = ttk.Label(frame, text="Decay")
+    # Decay Slider (uses utility function)
+    decay_label = ttk.Label(frame, text="Decay:")
     decay_label.pack(side=tk.LEFT, padx=5)
     decay_slider = ttk.Scale(
         frame,
@@ -132,8 +129,8 @@ def create_controls(frame):
     decay_slider.set(synth.decay_amount)
     decay_slider.pack(side=tk.LEFT, padx=5)
 
-    # Release Slider
-    release_label = ttk.Label(frame, text="Release")
+    # Release Slider (uses utility function)
+    release_label = ttk.Label(frame, text="Release:")
     release_label.pack(side=tk.LEFT, padx=5)
     release_slider = ttk.Scale(
         frame,
@@ -145,12 +142,12 @@ def create_controls(frame):
     release_slider.set(synth.release_amount)
     release_slider.pack(side=tk.LEFT, padx=5)
 
-    # Sustain Slider
-    sustain_label = ttk.Label(frame, text="Sustain")
+    # Sustain Slider (uses utility function)
+    sustain_label = ttk.Label(frame, text="Sustain:")
     sustain_label.pack(side=tk.LEFT, padx=5)
     sustain_slider = ttk.Scale(
         frame,
-        from_=0.,
+        from_=0.0,
         to=1.0,
         orient=tk.HORIZONTAL,
         command=lambda value: set_sustain(value, synth)
@@ -158,18 +155,46 @@ def create_controls(frame):
     sustain_slider.set(synth.sustain_amount)
     sustain_slider.pack(side=tk.LEFT, padx=5)
 
-    # Samples Slisdr
-    samples_label = ttk.Label(frame, text="Samples")
+    # Samples Slider
+    samples_label = ttk.Label(frame, text="Samples:")
     samples_label.pack(side=tk.LEFT, padx=5)
     samples_slider = ttk.Scale(
         frame,
         from_=100,
         to=44100,
         orient=tk.HORIZONTAL,
-        command=lambda value: set_num_samples(int(float(value)), synth)
+        command=lambda value: setattr(synth, 'num_samples', int(float(value)))
     )
     samples_slider.set(synth.num_samples)
     samples_slider.pack(side=tk.LEFT, padx=5)
+
+    # Filter Cutoff Slider
+    filter_label = ttk.Label(frame, text="Filter Cutoff:")
+    filter_label.pack(side=tk.LEFT, padx=5)
+    filter_slider = ttk.Scale(
+        frame,
+        from_=10,  # Minimum cutoff frequency
+        to=500,  # Maximum cutoff frequency
+        orient=tk.HORIZONTAL,
+        command=lambda value: setattr(synth, 'filter_cutoff', float(value))
+    )
+    filter_slider.set(synth.filter_cutoff)
+    filter_slider.pack(side=tk.LEFT, padx=5)
+
+    # Filter Type Dropdown
+    filter_type_label = ttk.Label(frame, text="Filter Type:")
+    filter_type_label.pack(side=tk.LEFT, padx=5)
+    filter_type_var = tk.StringVar(value="lowpass")
+    filter_type_dropdown = ttk.OptionMenu(
+        frame,
+        filter_type_var,
+        "lowpass",
+        "highpass",
+        command=lambda value: setattr(synth, 'filter_type', value)
+    )
+    filter_type_dropdown.pack(side=tk.LEFT, padx=5)
+
+
 
 # Waveform Selection
 def create_waveform_selection(left_frame):
