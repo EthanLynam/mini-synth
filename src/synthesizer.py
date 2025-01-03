@@ -1,10 +1,8 @@
 import numpy as np
-
-from utils import generate_wave, normalize_wave
-from utils import apply_filter
+from scipy.signal import butter, lfilter
 
 class Synthesizer:
-    def __init__(self, sample_rate = 44100, num_samples = 44100):
+    def __init__(self, sample_rate = 44100, num_samples = 44100, waveform = "sine"):
         self.sample_rate = sample_rate
         self.num_samples = num_samples
         self.volume = 0.5
@@ -18,6 +16,7 @@ class Synthesizer:
         self.total_duration = 2
         self.filter_cutoff = 1000
         self.filter_type = "lowpass"
+        self.waveform = waveform
 
     def set_adsr(self, attack, decay, sustain, release):
         self.attack_amount = attack
@@ -56,27 +55,48 @@ class Synthesizer:
         return np.clip(wave, -self.distortion_amount, self.distortion_amount)
 
     def apply_reverb(self, wave):
+
         reverb_signal = np.zeros_like(wave)
         decay = int(0.01 * self.sample_rate)
+
         for i in range(len(wave)):
             reverb_signal[i] = wave[i]
             if i >= decay:
                 reverb_signal[i] += self.reverb_amount * reverb_signal[i - decay]
         return reverb_signal
-    
-    def apply_filtering(self, wave):
-        return apply_filter(wave, self.sample_rate, self.filter_type, self.filter_cutoff)
-    
-    def process_wave(self, wave):
+
+    def apply_filtering(self, wave, sample_rate, filter_type, cutoff=1000):
+        freq = sample_rate / 2
+        normalized_cutoff = cutoff / freq  #0 to 1
+
+        # creates the filter
+        b, a = butter(N=4, Wn=normalized_cutoff, btype=filter_type)
+
+        # apply the filter
+        filtered_wave = lfilter(b, a, wave)
+        return filtered_wave
+
+    def normalize_wave(self, wave):
+        return np.clip(wave, -1.0, 1.0)
+
+    def generate_and_process_wave(self, freq):
+        t = np.linspace(0, self.total_duration, int(self.sample_rate * self.total_duration), endpoint=False)
+        if self.waveform == "sine":
+            wave = np.sin(2 * np.pi * freq * t)
+        elif self.waveform == "square":
+            wave = np.sign(np.sin(2 * np.pi * freq * t))
+        elif self.waveform == "saw":
+            wave = 2 * (t * freq - np.floor(t * freq + 0.5)) - 1
+        elif self.waveform == "triangle":
+            wave = 2 * np.abs(2 * (t * freq - np.floor(t * freq + 0.5))) - 1
+        else:
+            return
+
         wave = self.apply_adsr(wave)
         wave = self.apply_distortion(wave)
         wave = self.apply_reverb(wave)
-        wave = self.apply_filtering(wave)
-        return normalize_wave(wave)
+        wave = self.apply_filtering(wave, self.sample_rate, self.filter_type, self.filter_cutoff)
 
-    def generate_and_process_wave(self, freq, waveform="sine"):
-        wave = generate_wave(freq, self.total_duration, self.sample_rate, waveform)
-        return self.process_wave(wave)
-    
-    def set_num_samples(self, num_samples):
-        self.num_samples = num_samples
+        wave = self.normalize_wave(wave)
+
+        return wave
