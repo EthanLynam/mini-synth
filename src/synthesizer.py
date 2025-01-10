@@ -86,7 +86,7 @@ class Synthesizer:
         # returns unfiltered wave if filter is not toggled on
         if not self.filter_enabled:
             return wave
-        
+
         freq = sample_rate / 2 # nyquist freq
         normalized_cutoff = cutoff / freq  #0 to 1
 
