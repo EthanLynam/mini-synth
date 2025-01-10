@@ -14,4 +14,3 @@ def set_sustain(value, synth):
 def set_release(value, synth):
     synth.release_amount = float(value)
     synth.total_duration = synth.attack_amount + synth.decay_amount + synth.sustain_amount + synth.release_amount
-    synth.num_samples = value

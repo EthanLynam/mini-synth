@@ -3,10 +3,10 @@ from scipy.signal import butter, lfilter
 
 # synthesizer class
 class Synthesizer:
-    def __init__(self, sample_rate = 44100):
+    def __init__(self, sample_rate = 44100, num_samples = 10000):
         # initialize parameters for the class
         self.sample_rate = sample_rate # audio sample rate
-        self.num_samples = 1000 # number of samples to be displayed
+        self.num_samples = num_samples # number of samples to be displayed
         self.volume = 0.5
         self.amplifier_gain = 1.0
         self.distortion_amount = 1.2
@@ -18,6 +18,7 @@ class Synthesizer:
         self.total_duration = 2
         self.filter_cutoff = 1000
         self.filter_type = "lowpass"
+        self.filter_enabled = False
         self.waveform = "sine"
 
     def set_adsr(self, attack, decay, sustain, release):
@@ -82,6 +83,10 @@ class Synthesizer:
         return reverb_signal
 
     def apply_filtering(self, wave, sample_rate, filter_type, cutoff=1000):
+        # returns unfiltered wave if filter is not toggled on
+        if not self.filter_enabled:
+            return wave
+        
         freq = sample_rate / 2 # nyquist freq
         normalized_cutoff = cutoff / freq  #0 to 1
 

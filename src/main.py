@@ -29,8 +29,10 @@ canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
 
 # updates visual, used in play wave function
 def update_visualization(wave):
+    num = synth.num_samples
+
     ax.clear()
-    ax.plot(wave[:synth.num_samples]) # plots depending on samples size
+    ax.plot(wave[:num]) # plots depending on samples size
     ax.set_ylim(-1.0, 1.0)
     canvas.draw()
 
@@ -38,7 +40,7 @@ def update_visualization(wave):
 def play_wave(freq):
     # creates wave, generate_and_process_wave handles adding adsr etc. to wave
     wave = synth.generate_and_process_wave(freq)
-    wave = wave * synth.volume * synth.amplifier_gain
+    wave = wave * synth.amplifier_gain # adds amplifier to the wave
 
     # audio stream
     stream = p.open(format=pyaudio.paFloat32, channels=1, rate=synth.sample_rate, output=True)
@@ -105,7 +107,7 @@ def create_volume_UI(frame):
     amp_slider.set(synth.amplifier_gain)
     amp_slider.pack(side=tk.LEFT, padx=5)
 
-# controls for filter 
+# controls for filter
 def create_filters_UI(frame):
 
      # filter cutoff slider
@@ -134,6 +136,16 @@ def create_filters_UI(frame):
         command=lambda value: setattr(synth, 'filter_type', value)
     )
     filter_type_dropdown.pack(side=tk.LEFT, padx=5)
+
+    toggle_button = tk.Button(
+        frame,
+        text="Filter: ON",
+        command=lambda: (
+            setattr(synth, 'filter_enabled', not synth.filter_enabled),
+            toggle_button.config(text="Filter: ON" if synth.filter_enabled else "Filter: OFF")
+        )
+    )
+    toggle_button.pack(side=tk.LEFT, padx=5)
 
 # controls for ADSR envelope
 def create_ADSR_UI(frame):
