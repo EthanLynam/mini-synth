@@ -239,9 +239,12 @@ def create_piano_keys(frame):
                    ("G2", 392.00), ("A2", 440.00), ("B2", 493.88),
                    ("C3", 523.25), ("D3", 587.33), ("E3", 659.26), ("F3", 698.46),
                    ("G3", 783.99), ("A3", 880.00), ("B3", 987.77)]
-    black_notes = [("C#1", 138.59), ("D#1", 155.56), None, ("F#1", 185.00), ("G#1", 207.65), ("A#1", 233.08),
-                   ("C#2", 554.37), ("D#2", 622.25), None, ("F#2", 739.99), ("G#2", 830.61), ("A#2", 932.33),
-                   ("C#3", 554.37), ("D#3", 622.25), None, ("F#3", 740.00), ("G#3", 830.61), ("A#3", 932.33)]
+    black_notes = [("C#1", 138.59), ("D#1", 155.56), None, 
+                   ("F#1", 185.00), ("G#1", 207.65), ("A#1", 233.08), None, 
+                   ("C#2", 554.37), ("D#2", 622.25), None, 
+                   ("F#2", 739.99), ("G#2", 830.61), ("A#2", 932.33), None, 
+                   ("C#3", 554.37), ("D#3", 622.25), None, 
+                   ("F#3", 740.00), ("G#3", 830.61), ("A#3", 932.33)]
 
     white_keys = []
     black_keys = []
@@ -253,13 +256,13 @@ def create_piano_keys(frame):
         key.grid(row=0, column=i, padx=1, pady=10)
         white_keys.append(key)
 
-    # create black notes, exact same as white but different logic to make them inbetween white notes
+    # create black notes, exact same as white but manually place to make them inbetween white notes
     for i, note_data in enumerate(black_notes):
         if note_data:
             note, freq = note_data
             key = tk.Button(frame, text=note, width=3, height=8, bg="black", fg="white", relief="raised",
                             command=lambda f=freq: play_wave(f))
-            key.place(x=30 + (i * 50), y=10)
+            key.place(x=30 + (i * 50) - (i * 3), y=10)
             black_keys.append(key)
 
 # LAYOUT

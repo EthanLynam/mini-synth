@@ -1,8 +1,6 @@
-# Wavetable_Synth
-Wavetable Synthesizer 
+# Synthesizer with waveform visualizer
+Run main.py inside src for project. 
+Use keyboard to generate and visualize sound, use the different effects to manipulate the sound.
 
-.\venv\Scripts\activate
-pip install numpy pyaudio matplotlib
-
-.\venv\Scripts\activate
-pip install numpy pyaudio matplotlib
+# Needed libraries:
+pip install numpy pyaudio matplotlib scipy
