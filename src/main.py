@@ -40,7 +40,7 @@ def update_visualization(wave):
 def play_wave(freq):
     # creates wave, generate_and_process_wave handles adding adsr etc. to wave
     wave = synth.generate_and_process_wave(freq)
-    wave = wave * synth.amplifier_gain # adds amplifier to the wave
+    wave = wave * synth.amplifier_gain * synth.volume # adds amplifier to the wave
 
     # audio stream
     stream = p.open(format=pyaudio.paFloat32, channels=1, rate=synth.sample_rate, output=True)
@@ -234,17 +234,17 @@ def create_waveform_selection_UI(frame):
 def create_piano_keys(frame):
     # 3 octave piano, starting from C1
     white_notes = [("C1", 130.81), ("D1", 146.83), ("E1", 164.81), ("F1", 174.61),
-                   ("G1", 196.00), ("A1", 220.00), ("B1", 246.94),
-                   ("C2", 261.63), ("D2", 293.66), ("E2", 329.63), ("F2", 349.23),
-                   ("G2", 392.00), ("A2", 440.00), ("B2", 493.88),
-                   ("C3", 523.25), ("D3", 587.33), ("E3", 659.26), ("F3", 698.46),
-                   ("G3", 783.99), ("A3", 880.00), ("B3", 987.77)]
-    black_notes = [("C#1", 138.59), ("D#1", 155.56), None, 
-                   ("F#1", 185.00), ("G#1", 207.65), ("A#1", 233.08), None, 
-                   ("C#2", 554.37), ("D#2", 622.25), None, 
-                   ("F#2", 739.99), ("G#2", 830.61), ("A#2", 932.33), None, 
-                   ("C#3", 554.37), ("D#3", 622.25), None, 
-                   ("F#3", 740.00), ("G#3", 830.61), ("A#3", 932.33)]
+                    ("G1", 196.00), ("A1", 220.00), ("B1", 246.94),
+                    ("C2", 261.63), ("D2", 293.66), ("E2", 329.63), ("F2", 349.23),
+                    ("G2", 392.00), ("A2", 440.00), ("B2", 493.88),
+                    ("C3", 523.25), ("D3", 587.33), ("E3", 659.26), ("F3", 698.46),
+                    ("G3", 783.99), ("A3", 880.00), ("B3", 987.77)]
+    black_notes = [("C#1", 138.59), ("D#1", 155.56), None,
+                    ("F#1", 185.00), ("G#1", 207.65), ("A#1", 233.08), None,
+                    ("C#2", 277.18), ("D#2", 311.13), None,
+                    ("F#2", 369.99), ("G#2", 415.30), ("A#2", 466.16), None,
+                    ("C#3", 554.37), ("D#3", 622.25), None,
+                    ("F#3", 739.99), ("G#3", 830.61), ("A#3", 932.33), None]
 
     white_keys = []
     black_keys = []
