@@ -3,10 +3,10 @@
 ![Project in action](screenshots/image.png)
 
 ### A basic sound synthesizer and waveform visualiser. 
-Includes ADSR (Attack, Decay, Sustain, Release) envelope manipulation, waveform shape selection (sine, sawtooth etc.) and a three-octave keyboard.
+Includes ADSR (Attack, Decay, Sustain, Release) envelope manipulation, sound effcts (distortion and reverb), waveform shape selection (sine, sawtooth etc.) and a three-octave keyboard.
 
 
-# How to run:
+## How to run:
 
 ### Install necessary libraries:
 ```bash 
